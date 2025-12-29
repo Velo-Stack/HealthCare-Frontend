@@ -1,0 +1,195 @@
+/* ============================================
+   Healthcare Dashboard - Global Styles
+   ============================================ */
+
+@import "tailwindcss";
+
+/* ============================================
+   CSS Variables (From Flutter AppColors)
+   ============================================ */
+:root {
+  /* Primary Colors */
+  --color-primary-dark: #5C914C;
+  --color-primary: #82C341;
+  --color-primary-light: #A6D672;
+
+  /* Neutral Colors */
+  --color-white: #FFFFFF;
+  --color-background: #FFFFFF;
+  --color-scaffold-background: #F5F5F5;
+
+  /* Text Colors */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #666666;
+  --color-text-hint: #999999;
+
+  /* Grey Scale */
+  --color-black: #000000;
+  --color-grey: #BDBDBD;
+  --color-grey-light: #E0E0E0;
+
+  /* Status Colors */
+  --color-success: #4CAF50;
+  --color-error: #E53935;
+  --color-warning: #FFC107;
+  --color-info: #2196F3;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(to right, #5C914C, #82C341);
+  --gradient-primary-vertical: linear-gradient(to bottom, #82C341, #A6D672);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Sidebar Width */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 80px;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-scaffold-background);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   Scrollbar Styles
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-grey-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-grey);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-hint);
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-primary-vertical {
+  background: var(--gradient-primary-vertical);
+}
+
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   Animation Classes
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   Table Styles
+   ============================================ */
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   Form Styles
+   ============================================ */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(130, 195, 65, 0.2);
+}
+
+/* ============================================
+   Card Hover Effects
+   ============================================ */
+.card-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
