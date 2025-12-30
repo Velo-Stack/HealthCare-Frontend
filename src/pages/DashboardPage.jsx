@@ -1,6 +1,5 @@
 /**
- * DashboardPage Component
- * Main dashboard with statistics, charts, and recent data
+ * DashboardPage Component (Refined UI)
  */
 
 import { useMemo } from 'react';
@@ -22,145 +21,119 @@ import {
     Pie,
     Cell,
 } from 'recharts';
+
 import StatsCard from '../components/common/StatsCard';
 import Table from '../components/common/Table';
 import StatusBadge from '../components/common/StatusBadge';
+
 import { useUsers } from '../hooks/useUsers';
 import { useInsuranceCompanies } from '../hooks/useInsurance';
 import { useOrders } from '../hooks/useOrders';
 import { colors } from '../utils/constants';
-import { formatDate, getRelativeTime } from '../utils/formatDate';
-
-const CHART_COLORS = [colors.success, colors.warning, colors.error, colors.info];
+import { getRelativeTime } from '../utils/formatDate';
 
 export default function DashboardPage() {
-    // Fetch data
     const { data: usersData, isLoading: usersLoading } = useUsers();
     const { data: insuranceData, isLoading: insuranceLoading } = useInsuranceCompanies();
     const { data: ordersData, isLoading: ordersLoading } = useOrders();
 
-    // Calculate statistics
+    const loading = usersLoading || insuranceLoading || ordersLoading;
+
     const stats = useMemo(() => {
-        const orders = ordersData?.data || ordersData || [];
         const users = usersData?.data || usersData || [];
         const insurance = insuranceData?.data || insuranceData || [];
+        const orders = ordersData?.data || ordersData || [];
 
-        const pendingOrders = orders.filter(o => o.status === 'pending').length;
-        const approvedOrders = orders.filter(o => o.status === 'approved').length;
-        const rejectedOrders = orders.filter(o => o.status === 'rejected').length;
+        const pending = orders.filter(o => o.status === 'pending').length;
+        const approved = orders.filter(o => o.status === 'approved').length;
+        const rejected = orders.filter(o => o.status === 'rejected').length;
 
         return {
             totalUsers: users.length,
             totalInsurance: insurance.length,
             totalOrders: orders.length,
-            pendingOrders,
+            pendingOrders: pending,
             ordersByStatus: [
-                { name: 'Approved', value: approvedOrders, color: colors.success },
-                { name: 'Pending', value: pendingOrders, color: colors.warning },
-                { name: 'Rejected', value: rejectedOrders, color: colors.error },
+                { name: 'Approved', value: approved, color: colors.success },
+                { name: 'Pending', value: pending, color: colors.warning },
+                { name: 'Rejected', value: rejected, color: colors.error },
             ],
         };
     }, [usersData, insuranceData, ordersData]);
 
-    // Recent users (last 5)
     const recentUsers = useMemo(() => {
         const users = usersData?.data || usersData || [];
         return users.slice(0, 5);
     }, [usersData]);
 
-    // Recent orders (last 5)
     const recentOrders = useMemo(() => {
         const orders = ordersData?.data || ordersData || [];
         return orders.slice(0, 5);
     }, [ordersData]);
 
-    // Table columns for recent users
     const userColumns = [
         { key: 'name', title: 'Name' },
         { key: 'email', title: 'Email' },
         {
             key: 'createdAt',
             title: 'Joined',
-            render: (value) => getRelativeTime(value),
+            render: (v) => getRelativeTime(v),
         },
     ];
 
-    // Table columns for recent orders
     const orderColumns = [
         {
             key: 'id',
-            title: 'Order ID',
-            render: (value) => `#${value?.slice(-6) || 'N/A'}`,
+            title: 'Order',
+            render: (v) => `#${v?.slice(-6) || 'N/A'}`,
         },
         { key: 'medicineName', title: 'Medicine' },
         { key: 'quantity', title: 'Qty' },
         {
             key: 'status',
             title: 'Status',
-            render: (value) => <StatusBadge status={value} size="sm" />,
+            render: (v) => <StatusBadge status={v} size="sm" />,
         },
     ];
 
-    const loading = usersLoading || insuranceLoading || ordersLoading;
-
     return (
-        <div className="space-y-8 animate-fade-in">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                <StatsCard
-                    title="Total Users"
-                    value={stats.totalUsers}
-                    icon={HiUsers}
-                    color="primary"
-                    loading={loading}
-                />
-                <StatsCard
-                    title="Insurance Companies"
-                    value={stats.totalInsurance}
-                    icon={HiShieldCheck}
-                    color="info"
-                    loading={loading}
-                />
-                <StatsCard
-                    title="Total Orders"
-                    value={stats.totalOrders}
-                    icon={HiShoppingCart}
-                    color="success"
-                    loading={loading}
-                />
-                <StatsCard
-                    title="Pending Orders"
-                    value={stats.pendingOrders}
-                    icon={HiClock}
-                    color="warning"
-                    loading={loading}
-                />
-            </div>
+        <div className="space-y-10 animate-fade-in">
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                {/* Orders by Status Bar Chart */}
-                <div className="bg-white rounded-2xl p-8 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            {/* ===== Stats ===== */}
+            <section>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <StatsCard title="Total Users" value={stats.totalUsers} icon={HiUsers} loading={loading} />
+                    <StatsCard title="Insurance Companies" value={stats.totalInsurance} icon={HiShieldCheck} color="info" loading={loading} />
+                    <StatsCard title="Total Orders" value={stats.totalOrders} icon={HiShoppingCart} color="success" loading={loading} />
+                    <StatsCard title="Pending Orders" value={stats.pendingOrders} icon={HiClock} color="warning" loading={loading} />
+                </div>
+            </section>
+
+            {/* ===== Charts ===== */}
+            <section className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                {/* Bar Chart */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-gray-800 mb-4">
                         Orders by Status
                     </h3>
-                    <div className="h-72">
-                        <ResponsiveContainer width="100%" height="100%">
+
+                    <div className="h-64">
+                        <ResponsiveContainer>
                             <BarChart data={stats.ordersByStatus}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="name" tick={{ fill: colors.textSecondary }} />
-                                <YAxis tick={{ fill: colors.textSecondary }} />
+                                <CartesianGrid stroke="#f1f1f1" strokeDasharray="3 3" />
+                                <XAxis dataKey="name" tick={{ fill: '#6B7280', fontSize: 12 }} />
+                                <YAxis tick={{ fill: '#6B7280', fontSize: 12 }} />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: colors.white,
-                                        border: `1px solid ${colors.greyLight}`,
-                                        borderRadius: '12px',
-                                        padding: '12px',
+                                        background: '#fff',
+                                        borderRadius: 12,
+                                        border: '1px solid #eee',
+                                        fontSize: 12,
                                     }}
                                 />
-                                <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                                    {stats.ordersByStatus.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                                    {stats.ordersByStatus.map((e, i) => (
+                                        <Cell key={i} fill={e.color} />
                                     ))}
                                 </Bar>
                             </BarChart>
@@ -168,58 +141,46 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Orders Distribution Pie Chart */}
-                <div className="bg-white rounded-2xl p-8 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                {/* Pie Chart */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-gray-800 mb-4">
                         Orders Distribution
                     </h3>
-                    <div className="h-72 flex items-center justify-center">
-                        <ResponsiveContainer width="100%" height="100%">
+
+                    <div className="h-64">
+                        <ResponsiveContainer>
                             <PieChart>
                                 <Pie
                                     data={stats.ordersByStatus}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={70}
-                                    outerRadius={110}
-                                    paddingAngle={5}
                                     dataKey="value"
+                                    innerRadius={65}
+                                    outerRadius={100}
+                                    paddingAngle={4}
                                 >
-                                    {stats.ordersByStatus.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                    {stats.ordersByStatus.map((e, i) => (
+                                        <Cell key={i} fill={e.color} />
                                     ))}
                                 </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: colors.white,
-                                        border: `1px solid ${colors.greyLight}`,
-                                        borderRadius: '12px',
-                                        padding: '12px',
-                                    }}
-                                />
+                                <Tooltip />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
-                    {/* Legend */}
-                    <div className="flex justify-center gap-6 mt-6">
-                        {stats.ordersByStatus.map((item) => (
-                            <div key={item.name} className="flex items-center gap-2">
-                                <span
-                                    className="w-3 h-3 rounded-full"
-                                    style={{ backgroundColor: item.color }}
-                                />
-                                <span className="text-sm text-gray-600">{item.name}</span>
+
+                    <div className="flex justify-center gap-5 mt-4">
+                        {stats.ordersByStatus.map(item => (
+                            <div key={item.name} className="flex items-center gap-2 text-xs text-gray-600">
+                                <span className="w-2.5 h-2.5 rounded-full" style={{ background: item.color }} />
+                                {item.name}
                             </div>
                         ))}
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Recent Data Tables */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                {/* Recent Users */}
+            {/* ===== Tables ===== */}
+            <section className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                    <h3 className="text-sm font-semibold text-gray-800 mb-4">
                         Recent Users
                     </h3>
                     <Table
@@ -230,9 +191,8 @@ export default function DashboardPage() {
                     />
                 </div>
 
-                {/* Recent Orders */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                    <h3 className="text-sm font-semibold text-gray-800 mb-4">
                         Recent Orders
                     </h3>
                     <Table
@@ -242,7 +202,8 @@ export default function DashboardPage() {
                         emptyMessage="No orders yet"
                     />
                 </div>
-            </div>
+            </section>
+
         </div>
     );
 }

@@ -5,19 +5,18 @@
 
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HiPlus, HiPencil, HiTrash } from 'react-icons/hi';
-import Table from '../../components/common/Table';
+import { HiPlus } from 'react-icons/hi';
+import { InsuranceList } from '../../components/insurance';
 import SearchBar from '../../components/common/SearchBar';
 import Pagination from '../../components/common/Pagination';
 import Button from '../../components/common/Button';
-import StatusBadge from '../../components/common/StatusBadge';
 import { ConfirmModal } from '../../components/common/Modal';
 import {
     useInsuranceCompanies,
     useDeleteInsurance,
     useToggleInsuranceStatus,
 } from '../../hooks/useInsurance';
-import { ITEMS_PER_PAGE, colors } from '../../utils/constants';
+import { ITEMS_PER_PAGE } from '../../utils/constants';
 
 export default function InsuranceListPage() {
     const navigate = useNavigate();
@@ -31,7 +30,7 @@ export default function InsuranceListPage() {
     const toggleStatusMutation = useToggleInsuranceStatus();
 
     // Filter and paginate
-    const { filteredCompanies, paginatedCompanies, totalPages, totalItems } = useMemo(() => {
+    const { paginatedCompanies, totalPages, totalItems } = useMemo(() => {
         const companies = insuranceData?.data || insuranceData || [];
 
         // Filter by search
@@ -44,7 +43,6 @@ export default function InsuranceListPage() {
         const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
 
         return {
-            filteredCompanies: filtered,
             paginatedCompanies: paginated,
             totalPages: Math.ceil(filtered.length / ITEMS_PER_PAGE),
             totalItems: filtered.length,
@@ -55,6 +53,11 @@ export default function InsuranceListPage() {
     const handleSearch = (value) => {
         setSearch(value);
         setCurrentPage(1);
+    };
+
+    // Handle edit
+    const handleEdit = (company) => {
+        navigate(`/insurance/edit/${company.id || company._id}`);
     };
 
     // Handle delete
@@ -74,117 +77,55 @@ export default function InsuranceListPage() {
         });
     };
 
-    // Table columns
-    const columns = [
-        {
-            key: 'logo',
-            title: 'Logo',
-            width: '80px',
-            render: (value) => (
-                <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
-                    {value ? (
-                        <img src={value} alt="Logo" className="w-full h-full object-contain" />
-                    ) : (
-                        <span className="text-gray-400 text-xs">No Logo</span>
-                    )}
-                </div>
-            ),
-        },
-        {
-            key: 'name',
-            title: 'Company Name',
-            render: (value) => <span className="font-medium text-gray-900">{value}</span>,
-        },
-        {
-            key: 'description',
-            title: 'Description',
-            render: (value) => (
-                <span className="text-gray-600 line-clamp-2">{value || '-'}</span>
-            ),
-        },
-        {
-            key: 'isActive',
-            title: 'Status',
-            render: (value, row) => (
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleStatus(row);
-                    }}
-                    disabled={toggleStatusMutation.isPending}
-                >
-                    <StatusBadge
-                        status={value ? 'active' : 'inactive'}
-                        size="sm"
-                    />
-                </button>
-            ),
-        },
-        {
-            key: 'actions',
-            title: 'Actions',
-            render: (_, row) => (
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={HiPencil}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/insurance/edit/${row.id || row._id}`);
-                        }}
-                    >
-                        Edit
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={HiTrash}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteModal({ open: true, company: row });
-                        }}
-                        className="text-red-600 hover:text-red-700"
-                    >
-                        Delete
-                    </Button>
-                </div>
-            ),
-        },
-    ];
+    // Handle add new
+    const handleAddNew = () => {
+        navigate('/insurance/new');
+    };
 
     return (
         <div className="space-y-6 animate-fade-in">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Insurance Companies</h1>
-                    <p className="text-gray-500">Manage insurance companies and their details</p>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        Insurance Companies
+                    </h1>
+                    <p className="text-gray-500 mt-1">
+                        Manage insurance companies and their dynamic fields
+                    </p>
                 </div>
                 <Button
                     icon={HiPlus}
-                    onClick={() => navigate('/insurance/new')}
+                    onClick={handleAddNew}
                 >
                     Add Company
                 </Button>
             </div>
 
-            {/* Search */}
-            <div className="flex items-center gap-4">
+            {/* Search & Filters */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <SearchBar
                     value={search}
                     onChange={handleSearch}
                     placeholder="Search by company name..."
-                    className="max-w-md"
+                    className="w-full sm:max-w-md"
                 />
+                {totalItems > 0 && (
+                    <div className="text-sm text-gray-500">
+                        {totalItems} {totalItems === 1 ? 'company' : 'companies'} found
+                    </div>
+                )}
             </div>
 
-            {/* Table */}
-            <Table
-                columns={columns}
-                data={paginatedCompanies}
+            {/* Insurance List */}
+            <InsuranceList
+                companies={paginatedCompanies}
                 loading={isLoading}
-                emptyMessage="No insurance companies found"
+                onEdit={handleEdit}
+                onDelete={(company) => setDeleteModal({ open: true, company })}
+                onToggleStatus={handleToggleStatus}
+                onAddNew={handleAddNew}
+                isToggling={toggleStatusMutation.isPending}
             />
 
             {/* Pagination */}

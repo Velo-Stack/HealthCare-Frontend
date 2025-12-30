@@ -1,9 +1,9 @@
 /**
  * Sidebar Component
- * Main navigation sidebar with logo
+ * Main navigation sidebar with logo and logout
  */
 
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     HiHome,
     HiUsers,
@@ -12,6 +12,7 @@ import {
     HiLogout,
 } from 'react-icons/hi';
 import { colors } from '../../utils/constants';
+import { useAuth } from '../../context/AuthContext';
 
 const menuItems = [
     { path: '/', icon: HiHome, label: 'Dashboard' },
@@ -21,6 +22,14 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     return (
         <aside
             className="fixed top-0 left-0 h-screen bg-white border-r border-gray-100 flex flex-col z-40"
@@ -76,6 +85,7 @@ export default function Sidebar() {
             {/* Footer / Logout */}
             <div className="p-6 border-t border-gray-100">
                 <button
+                    onClick={handleLogout}
                     className="flex items-center gap-4 w-full px-5 py-4 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 font-medium transition-all duration-200"
                 >
                     <HiLogout className="w-6 h-6" />

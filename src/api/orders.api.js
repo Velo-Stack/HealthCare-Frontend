@@ -7,12 +7,12 @@ import axiosInstance from './axiosInstance';
 import { API_ENDPOINTS } from '../utils/constants';
 
 /**
- * Get all orders with optional filters
+ * Get all orders with optional filters (Admin)
  * @param {Object} params - Query parameters (status, page, limit, search)
  * @returns {Promise} Orders list
  */
 export const getOrders = async (params = {}) => {
-    const response = await axiosInstance.get(API_ENDPOINTS.ORDERS, { params });
+    const response = await axiosInstance.get(`${API_ENDPOINTS.ORDERS}/all`, { params });
     return response.data;
 };
 

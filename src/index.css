@@ -1,11 +1,12 @@
 /* ============================================
    Healthcare Dashboard - Global Styles
+   Tailwind CSS + CSS Variables Only
    ============================================ */
 
 @import "tailwindcss";
 
 /* ============================================
-   CSS Variables (From Flutter AppColors)
+   CSS Variables (Design Tokens)
    ============================================ */
 :root {
   /* Primary Colors */
@@ -38,17 +39,6 @@
   --gradient-primary: linear-gradient(to right, #5C914C, #82C341);
   --gradient-primary-vertical: linear-gradient(to bottom, #82C341, #A6D672);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-
-  /* Border Radius */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-
   /* Sidebar Width */
   --sidebar-width: 260px;
   --sidebar-collapsed-width: 80px;
@@ -57,11 +47,7 @@
 /* ============================================
    Base Styles
    ============================================ */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+
 
 body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -73,7 +59,7 @@ body {
 }
 
 /* ============================================
-   Scrollbar Styles
+   Custom Scrollbar
    ============================================ */
 ::-webkit-scrollbar {
   width: 8px;
@@ -95,25 +81,7 @@ body {
 }
 
 /* ============================================
-   Utility Classes
-   ============================================ */
-.gradient-primary {
-  background: var(--gradient-primary);
-}
-
-.gradient-primary-vertical {
-  background: var(--gradient-primary-vertical);
-}
-
-.text-gradient {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ============================================
-   Animation Classes
+   Custom Animations
    ============================================ */
 @keyframes fadeIn {
   from {
@@ -137,15 +105,15 @@ body {
   }
 }
 
-@keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  50% {
-    opacity: 0.5;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -157,39 +125,24 @@ body {
   animation: slideIn 0.3s ease-out;
 }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
 }
 
 /* ============================================
-   Table Styles
+   Gradient Utilities
    ============================================ */
-.table-container {
-  overflow-x: auto;
-  border-radius: var(--radius-lg);
-  background: var(--color-white);
-  box-shadow: var(--shadow-sm);
+.gradient-primary {
+  background: var(--gradient-primary);
 }
 
-/* ============================================
-   Form Styles
-   ============================================ */
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(130, 195, 65, 0.2);
+.gradient-primary-vertical {
+  background: var(--gradient-primary-vertical);
 }
 
-/* ============================================
-   Card Hover Effects
-   ============================================ */
-.card-hover {
-  transition: all 0.2s ease-in-out;
-}
-
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

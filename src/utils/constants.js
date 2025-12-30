@@ -61,9 +61,11 @@ export const ORDER_STATUS_COLORS = {
 export const ITEMS_PER_PAGE = 10;
 
 export const API_ENDPOINTS = {
+    AUTH: '/auth',
     USERS: '/users',
     INSURANCE: '/insurance',
     ORDERS: '/orders',
+    CARDS: '/cards',
 };
 
 export default colors;
