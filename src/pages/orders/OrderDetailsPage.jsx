@@ -3,11 +3,12 @@
  * View order details and update status
  */
 
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { HiArrowLeft, HiCheck, HiX, HiPhotograph } from 'react-icons/hi';
+import { HiArrowLeft, HiCheck, HiX, HiPhotograph, HiPencil, HiSave } from 'react-icons/hi';
 import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
-import { useOrder, useApproveOrder, useRejectOrder } from '../../hooks/useOrders';
+import { useOrder, useApproveOrder, useRejectOrder, useUpdateAdminNotes } from '../../hooks/useOrders';
 import { formatDateTime } from '../../utils/formatDate';
 import { colors, ORDER_STATUS } from '../../utils/constants';
 
@@ -18,8 +19,24 @@ export default function OrderDetailsPage() {
     const { data: orderData, isLoading } = useOrder(id);
     const approveMutation = useApproveOrder();
     const rejectMutation = useRejectOrder();
+    const notesMutation = useUpdateAdminNotes();
 
     const order = orderData?.data || orderData;
+
+    // Admin notes state
+    const [adminNotes, setAdminNotes] = useState('');
+
+    // Sync notes when order loads
+    useEffect(() => {
+        if (order?.adminNotes !== undefined) {
+            setAdminNotes(order.adminNotes || '');
+        }
+    }, [order?.adminNotes]);
+
+    // Handle save notes
+    const handleSaveNotes = () => {
+        notesMutation.mutate({ id, adminNotes });
+    };
 
     // Handle approve
     const handleApprove = () => {
@@ -123,14 +140,14 @@ export default function OrderDetailsPage() {
                                 className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
                                 style={{ background: `linear-gradient(to right, ${colors.primaryDark}, ${colors.primary})` }}
                             >
-                                {order?.userName?.charAt(0)?.toUpperCase() || 'U'}
+                                {order?.userId?.name?.charAt(0)?.toUpperCase() || 'U'}
                             </div>
                             <div>
-                                <p className="font-medium text-gray-900">{order?.userName || 'Unknown'}</p>
-                                <p className="text-sm text-gray-500">{order?.userEmail || '-'}</p>
+                                <p className="font-medium text-gray-900">{order?.userId?.name || 'Unknown'}</p>
+                                <p className="text-sm text-gray-500">{order?.userId?.email || '-'}</p>
                             </div>
                         </div>
-                        <DetailItem label="Phone" value={order?.userPhone || '-'} />
+                        <DetailItem label="Phone" value={order?.userId?.phone || '-'} />
                         <DetailItem label="Address" value={order?.deliveryAddress || '-'} />
                     </div>
                 </div>
@@ -171,6 +188,36 @@ export default function OrderDetailsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Admin Notes Section */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <HiPencil className="w-5 h-5 text-gray-400" />
+                    Admin Notes
+                    <span className="text-xs font-normal text-gray-400">(Visible to customer)</span>
+                </h2>
+                <div className="space-y-4">
+                    <textarea
+                        value={adminNotes}
+                        onChange={(e) => setAdminNotes(e.target.value)}
+                        placeholder="Add notes for this order... (e.g., special instructions, delivery notes)"
+                        className="w-full h-32 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#82C341]/30 focus:border-[#82C341] resize-none transition-all"
+                    />
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-400">
+                            {adminNotes.length} characters
+                        </p>
+                        <Button
+                            icon={HiSave}
+                            onClick={handleSaveNotes}
+                            loading={notesMutation.isPending}
+                            disabled={adminNotes === (order?.adminNotes || '')}
+                        >
+                            Save Notes
+                        </Button>
+                    </div>
+                </div>
+            </div>
 
             {/* Order Timeline/History */}
             <div className="bg-white rounded-xl shadow-sm p-6">

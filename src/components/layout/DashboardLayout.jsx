@@ -29,13 +29,12 @@ export default function DashboardLayout({ title = 'Dashboard', subtitle = '' }) 
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
             >
-                <Sidebar />
+                <Sidebar onClose={() => setIsMobileMenuOpen(false)} isMobileMenuOpen={isMobileMenuOpen} />
             </div>
 
             {/* Main content area */}
             <div
-                className="min-h-screen transition-all duration-300"
-                style={{ marginLeft: 'var(--sidebar-width)' }}
+                className="min-h-screen transition-all duration-300 lg:ml-[260px] ml-0"
             >
                 {/* Header */}
                 <Header

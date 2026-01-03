@@ -11,6 +11,7 @@ import {
     approveOrder,
     rejectOrder,
     getOrderStats,
+    updateAdminNotes,
 } from '../api/orders.api';
 import toast from 'react-hot-toast';
 
@@ -109,6 +110,24 @@ export const useRejectOrder = () => {
     });
 };
 
+/**
+ * Hook to update admin notes
+ */
+export const useUpdateAdminNotes = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, adminNotes }) => updateAdminNotes(id, adminNotes),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [ORDERS_KEY] });
+            toast.success('Notes saved successfully');
+        },
+        onError: () => {
+            toast.error('Failed to save notes');
+        },
+    });
+};
+
 export default {
     useOrders,
     useOrder,
@@ -116,4 +135,5 @@ export default {
     useUpdateOrderStatus,
     useApproveOrder,
     useRejectOrder,
+    useUpdateAdminNotes,
 };

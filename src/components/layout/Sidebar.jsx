@@ -10,6 +10,7 @@ import {
     HiShieldCheck,
     HiShoppingCart,
     HiLogout,
+    HiX,
 } from 'react-icons/hi';
 import { colors } from '../../utils/constants';
 import { useAuth } from '../../context/AuthContext';
@@ -21,20 +22,36 @@ const menuItems = [
     { path: '/orders', icon: HiShoppingCart, label: 'Orders' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onClose, isMobileMenuOpen }) {
     const { logout } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
         navigate('/login');
+        if (onClose) onClose();
+    };
+
+    const handleNavClick = () => {
+        // Close sidebar on mobile when clicking a nav item
+        if (onClose) onClose();
     };
 
     return (
         <aside
-            className="fixed top-0 left-0 h-screen bg-white border-r border-gray-100 flex flex-col z-40"
+            className="h-screen bg-white border-r border-gray-100 flex flex-col relative"
             style={{ width: 'var(--sidebar-width)' }}
         >
+            {/* Close button - Floating on mobile, only when open */}
+            {isMobileMenuOpen && (
+                <button
+                    onClick={onClose}
+                    className="lg:hidden absolute -right-12 top-4 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-[#5C914C] hover:to-[#82C341] transition-all duration-300 z-50"
+                >
+                    <HiX className="w-5 h-5" />
+                </button>
+            )}
+
             {/* Logo Section */}
             <div className="p-8 border-b border-gray-100">
                 <div className="flex items-center gap-4">
@@ -62,6 +79,7 @@ export default function Sidebar() {
                         <li key={item.path}>
                             <NavLink
                                 to={item.path}
+                                onClick={handleNavClick}
                                 className={({ isActive }) =>
                                     `flex items-center gap-4 px-5 py-4 rounded-xl font-medium transition-all duration-200 ${isActive
                                         ? 'text-white shadow-md'
@@ -95,3 +113,4 @@ export default function Sidebar() {
         </aside>
     );
 }
+

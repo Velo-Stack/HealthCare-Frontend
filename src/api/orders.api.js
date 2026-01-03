@@ -71,4 +71,16 @@ export default {
     approveOrder,
     rejectOrder,
     getOrderStats,
+    updateAdminNotes,
+};
+
+/**
+ * Update admin notes on order
+ * @param {string} id - Order ID
+ * @param {string} adminNotes - Admin notes
+ * @returns {Promise} Updated order
+ */
+export const updateAdminNotes = async (id, adminNotes) => {
+    const response = await axiosInstance.patch(`${API_ENDPOINTS.ORDERS}/${id}/notes`, { adminNotes });
+    return response.data;
 };

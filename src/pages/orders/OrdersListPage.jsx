@@ -90,16 +90,16 @@ export default function OrdersListPage() {
     // Table columns
     const columns = [
         {
-            key: 'id',
+            key: '_id',
             title: 'Order ID',
             render: (value) => (
                 <span className="font-mono text-sm">#{(value || '').slice(-6)}</span>
             ),
         },
         {
-            key: 'userName',
+            key: 'userId',
             title: 'Customer',
-            render: (value) => <span className="font-medium">{value || 'Unknown'}</span>,
+            render: (value) => <span className="font-medium">{value?.name || 'Unknown'}</span>,
         },
         { key: 'medicineName', title: 'Medicine' },
         {
@@ -170,8 +170,8 @@ export default function OrdersListPage() {
                         {filter.label}
                         <span
                             className={`ml-2 px-2 py-0.5 rounded-full text-xs ${statusFilter === filter.value
-                                    ? 'bg-white/20'
-                                    : 'bg-gray-100'
+                                ? 'bg-white/20'
+                                : 'bg-gray-100'
                                 }`}
                         >
                             {statusCounts[filter.value] || 0}
